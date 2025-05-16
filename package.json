@@ -1,0 +1,17 @@
+{
+  "name": "serverless-blog-platform",
+  "version": "1.0.0",
+  "description": "A serverless, auto-scaling personal blog website with user authentication and administrative approval",
+  "scripts": {
+    "install:all": "npm run install:backend && npm run install:frontend && npm run install:infrastructure",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:infrastructure": "cd infrastructure && npm install",
+    "deploy:infrastructure": "cd infrastructure && cdk deploy",
+    "build:frontend": "cd frontend && npm run build",
+    "deploy:frontend": "cd frontend && npm run deploy",
+    "start:frontend": "cd frontend && npm start"
+  },
+  "author": "",
+  "license": "ISC"
+}

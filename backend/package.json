@@ -1,0 +1,9 @@
+{
+  "name": "serverless-blog-backend",
+  "version": "1.0.0",
+  "description": "Backend functions for serverless blog platform",
+  "dependencies": {
+    "aws-sdk": "^2.1048.0",
+    "uuid": "^8.3.2"
+  }
+}

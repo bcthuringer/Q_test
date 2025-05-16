@@ -30,6 +30,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/blog/:id" element={<BlogPage />} />
+              <Route path="/login" element={<Authenticator />} />
               <Route 
                 path="/create" 
                 element={

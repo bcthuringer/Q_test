@@ -19,7 +19,19 @@ Amplify.configure({
       bucket: config.mediaBucket,
       region: config.region
     }
-  }
+  },
+  // Only configure API if it's enabled and endpoint is available
+  ...(config.features.apiEnabled && config.apiEndpoint ? {
+    API: {
+      endpoints: [
+        {
+          name: 'blogApi',
+          endpoint: config.apiEndpoint,
+          region: config.region
+        }
+      ]
+    }
+  } : {})
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

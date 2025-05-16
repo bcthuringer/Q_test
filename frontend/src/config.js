@@ -21,6 +21,12 @@ const config = {
   
   // API Gateway (when implemented)
   apiEndpoint: process.env.REACT_APP_API_ENDPOINT,
+  
+  // Feature flags
+  features: {
+    // Set to false since API Gateway is not yet deployed
+    apiEnabled: false
+  }
 };
 
 // For local development, provide fallback values if environment variables are not set

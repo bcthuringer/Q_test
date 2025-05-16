@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { SimplifiedBlogStack } from '../templates/simplified-stack';
+import { FixedBlogStack } from '../templates/fixed-stack';
 
 const app = new cdk.App();
-new SimplifiedBlogStack(app, 'BlogServerlessStack', {
+new FixedBlogStack(app, 'BlogServerlessStack', {
   env: { 
     account: process.env.CDK_DEFAULT_ACCOUNT, 
     region: process.env.CDK_DEFAULT_REGION || 'us-east-1' 

@@ -1,0 +1,9 @@
+{
+  "name": "db-layer",
+  "version": "1.0.0",
+  "description": "Database utilities for Lambda functions",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1048.0"
+  }
+}

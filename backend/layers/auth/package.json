@@ -1,0 +1,9 @@
+{
+  "name": "auth-layer",
+  "version": "1.0.0",
+  "description": "Authentication utilities for Lambda functions",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1048.0"
+  }
+}

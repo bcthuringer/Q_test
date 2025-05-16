@@ -5,12 +5,10 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as path from 'path';
 
-export class BlogServerlessStack extends cdk.Stack {
+export class SimplifiedBlogStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -79,18 +77,6 @@ export class BlogServerlessStack extends cdk.Stack {
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
     });
 
-    // Add a pre-signup Lambda trigger to handle admin approval
-    const preSignupFunction = new lambda.Function(this, 'PreSignupFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/functions/auth/pre-signup')),
-      environment: {
-        USER_POOL_ID: userPool.userPoolId,
-      },
-    });
-
-    userPool.addTrigger(cognito.UserPoolOperation.PRE_SIGN_UP, preSignupFunction);
-
     // Cognito User Pool Client
     const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
       userPool,
@@ -129,90 +115,35 @@ export class BlogServerlessStack extends cdk.Stack {
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
-    // Lambda functions for API
-    const authLayer = new lambda.LayerVersion(this, 'AuthLayer', {
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/layers/auth')),
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-      description: 'Common authentication utilities',
+    // Store configuration values in SSM Parameter Store
+    new ssm.StringParameter(this, 'UserPoolIdParameter', {
+      parameterName: '/blog/auth/userPoolId',
+      stringValue: userPool.userPoolId,
+      description: 'Cognito User Pool ID for the blog application',
     });
 
-    const dbLayer = new lambda.LayerVersion(this, 'DbLayer', {
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/layers/db')),
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-      description: 'Database utilities',
+    new ssm.StringParameter(this, 'UserPoolClientIdParameter', {
+      parameterName: '/blog/auth/userPoolClientId',
+      stringValue: userPoolClient.userPoolClientId,
+      description: 'Cognito User Pool Client ID for the blog application',
     });
 
-    // Create API Lambda functions
-    const createBlogFunction = new lambda.Function(this, 'CreateBlogFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/functions/blog/create')),
-      layers: [authLayer, dbLayer],
-      environment: {
-        BLOGS_TABLE: blogsTable.tableName,
-        USER_POOL_ID: userPool.userPoolId,
-      },
+    new ssm.StringParameter(this, 'WebsiteBucketParameter', {
+      parameterName: '/blog/storage/websiteBucket',
+      stringValue: websiteBucket.bucketName,
+      description: 'S3 bucket name for website hosting',
     });
 
-    const getBlogsFunction = new lambda.Function(this, 'GetBlogsFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/functions/blog/list')),
-      layers: [dbLayer],
-      environment: {
-        BLOGS_TABLE: blogsTable.tableName,
-      },
+    new ssm.StringParameter(this, 'MediaBucketParameter', {
+      parameterName: '/blog/storage/mediaBucket',
+      stringValue: mediaBucket.bucketName,
+      description: 'S3 bucket name for media storage',
     });
 
-    const approveUserFunction = new lambda.Function(this, 'ApproveUserFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../backend/functions/admin/approve-user')),
-      layers: [authLayer],
-      environment: {
-        USER_POOL_ID: userPool.userPoolId,
-        USERS_TABLE: usersTable.tableName,
-      },
-    });
-
-    // Grant permissions
-    blogsTable.grantReadWriteData(createBlogFunction);
-    blogsTable.grantReadData(getBlogsFunction);
-    usersTable.grantReadWriteData(approveUserFunction);
-    mediaBucket.grantReadWrite(createBlogFunction);
-
-    // API Gateway
-    const api = new apigateway.RestApi(this, 'BlogApi', {
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
-        allowMethods: apigateway.Cors.ALL_METHODS,
-      },
-      deployOptions: {
-        stageName: 'prod',
-      },
-    });
-
-    // Add Cognito Authorizer
-    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'BlogApiAuthorizer', {
-      cognitoUserPools: [userPool],
-    });
-
-    // API Resources and Methods
-    const blogsResource = api.root.addResource('blogs');
-    
-    blogsResource.addMethod('GET', new apigateway.LambdaIntegration(getBlogsFunction));
-    
-    blogsResource.addMethod('POST', new apigateway.LambdaIntegration(createBlogFunction), {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
-    });
-
-    const adminResource = api.root.addResource('admin');
-    const usersResource = adminResource.addResource('users');
-    
-    usersResource.addMethod('POST', new apigateway.LambdaIntegration(approveUserFunction), {
-      authorizer,
-      authorizationType: apigateway.AuthorizationType.COGNITO,
+    new ssm.StringParameter(this, 'CloudFrontDomainParameter', {
+      parameterName: '/blog/distribution/domain',
+      stringValue: distribution.distributionDomainName,
+      description: 'CloudFront distribution domain name',
     });
 
     // Outputs
@@ -234,10 +165,6 @@ export class BlogServerlessStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'UserPoolClientId', {
       value: userPoolClient.userPoolClientId,
-    });
-
-    new cdk.CfnOutput(this, 'ApiUrl', {
-      value: api.url,
     });
   }
 }

@@ -4,29 +4,20 @@ import { BrowserRouter } from 'react-router-dom';
 import { Amplify } from 'aws-amplify';
 import App from './App';
 import './styles/index.css';
+import config from './config';
 
-// Configure Amplify
-// Note: These values will be replaced with actual values after deployment
+// Configure Amplify with values from config
 Amplify.configure({
   Auth: {
-    region: 'us-east-1',
-    userPoolId: 'USER_POOL_ID',
-    userPoolWebClientId: 'USER_POOL_CLIENT_ID',
+    region: config.region,
+    userPoolId: config.userPoolId,
+    userPoolWebClientId: config.userPoolClientId,
     mandatorySignIn: true,
-  },
-  API: {
-    endpoints: [
-      {
-        name: 'blogApi',
-        endpoint: 'API_ENDPOINT',
-        region: 'us-east-1'
-      }
-    ]
   },
   Storage: {
     AWSS3: {
-      bucket: 'MEDIA_BUCKET_NAME',
-      region: 'us-east-1'
+      bucket: config.mediaBucket,
+      region: config.region
     }
   }
 });

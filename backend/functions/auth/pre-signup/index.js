@@ -7,7 +7,7 @@ exports.handler = async (event) => {
   event.response.autoConfirmUser = true;
   event.response.autoVerifyEmail = true;
   
-  // Log the event for admin review
+  // Log the event for admin review (avoid logging sensitive information)
   console.log('New user signup:', JSON.stringify({
     username: event.userName,
     email: event.request.userAttributes.email,

@@ -2,6 +2,10 @@ const AWS = require('aws-sdk');
 const cognito = new AWS.CognitoIdentityServiceProvider();
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+// Get parameters from environment variables
+const USER_POOL_ID = process.env.USER_POOL_ID;
+const USERS_TABLE = process.env.USERS_TABLE;
+
 /**
  * Admin function to approve new user registrations
  */
@@ -36,13 +40,13 @@ exports.handler = async (event) => {
     if (action === 'approve') {
       // Enable the user in Cognito
       await cognito.adminEnableUser({
-        UserPoolId: process.env.USER_POOL_ID,
+        UserPoolId: USER_POOL_ID,
         Username: username
       }).promise();
       
       // Add user to the users table with approved status
       await dynamodb.put({
-        TableName: process.env.USERS_TABLE,
+        TableName: USERS_TABLE,
         Item: {
           userId: username,
           status: 'APPROVED',
@@ -59,7 +63,7 @@ exports.handler = async (event) => {
     } else if (action === 'reject') {
       // Delete the user from Cognito
       await cognito.adminDeleteUser({
-        UserPoolId: process.env.USER_POOL_ID,
+        UserPoolId: USER_POOL_ID,
         Username: username
       }).promise();
       
@@ -92,13 +96,13 @@ async function checkAdminStatus(username) {
   try {
     // Get user from Cognito
     const userResponse = await cognito.adminGetUser({
-      UserPoolId: process.env.USER_POOL_ID,
+      UserPoolId: USER_POOL_ID,
       Username: username
     }).promise();
     
     // Check for admin group membership
     const groupsResponse = await cognito.adminListGroupsForUser({
-      UserPoolId: process.env.USER_POOL_ID,
+      UserPoolId: USER_POOL_ID,
       Username: username
     }).promise();
     

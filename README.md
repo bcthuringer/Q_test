@@ -10,6 +10,7 @@ A serverless, auto-scaling personal blog website with user authentication and ad
 - Administrative approval process for new users
 - Auto-scaling infrastructure
 - Responsive frontend design
+- Secure configuration management
 
 ## Architecture
 
@@ -22,6 +23,7 @@ This project uses a modern serverless architecture:
 - **Storage**: Amazon S3 for media uploads
 - **CDN**: CloudFront for content delivery
 - **Infrastructure**: AWS CDK for infrastructure as code
+- **Secret Management**: AWS SSM Parameter Store for configuration
 
 ## Directory Structure
 
@@ -30,6 +32,7 @@ This project uses a modern serverless architecture:
 ├── frontend/           # React.js frontend application
 ├── backend/            # Serverless backend functions
 ├── infrastructure/     # AWS CDK infrastructure code
+├── scripts/            # Utility scripts
 └── docs/               # Project documentation
 ```
 
@@ -57,17 +60,36 @@ This project uses a modern serverless architecture:
    npm run deploy:infrastructure
    ```
 
-4. **Update the frontend configuration**:
-   Update the Amplify configuration in `frontend/src/index.js` with the output values from the CDK deployment.
+4. **Load environment variables from SSM Parameter Store**:
+   ```bash
+   cd frontend
+   ../scripts/load-env.sh
+   ```
 
 5. **Build and deploy the frontend**:
    ```bash
-   npm run build:frontend
-   npm run deploy:frontend
+   npm run build
+   npm run deploy
    ```
 
 6. **Create an admin user**:
-   Follow the instructions in the docs/user-guide directory.
+   ```bash
+   aws cognito-idp admin-add-user-to-group \
+     --user-pool-id $(aws ssm get-parameter --name "/blog/auth/userPoolId" --query "Parameter.Value" --output text) \
+     --username admin@example.com \
+     --group-name Admins
+   ```
+
+## Security Best Practices
+
+This project follows these security best practices:
+
+1. **No hardcoded secrets**: Configuration values are stored in AWS SSM Parameter Store
+2. **Environment variables**: Sensitive values are loaded from environment variables
+3. **Least privilege**: IAM roles follow the principle of least privilege
+4. **HTTPS everywhere**: All communication is encrypted using HTTPS
+5. **Secure authentication**: Cognito handles user authentication with proper password policies
+6. **Input validation**: All user inputs are validated before processing
 
 ## Estimated Costs
 

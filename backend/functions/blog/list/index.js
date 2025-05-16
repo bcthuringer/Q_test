@@ -1,6 +1,9 @@
 const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+// Get parameters from environment variables
+const BLOGS_TABLE = process.env.BLOGS_TABLE;
+
 /**
  * Lambda function to list blog posts
  */
@@ -14,7 +17,7 @@ exports.handler = async (event) => {
       : undefined;
     
     let params = {
-      TableName: process.env.BLOGS_TABLE,
+      TableName: BLOGS_TABLE,
       Limit: limit,
       ScanIndexForward: false, // Sort in descending order (newest first)
     };

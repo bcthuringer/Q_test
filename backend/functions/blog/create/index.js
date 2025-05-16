@@ -3,6 +3,10 @@ const { v4: uuidv4 } = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
 
+// Get parameters from environment variables
+const BLOGS_TABLE = process.env.BLOGS_TABLE;
+const MEDIA_BUCKET = process.env.MEDIA_BUCKET;
+
 /**
  * Lambda function to create a new blog post
  */
@@ -39,7 +43,7 @@ exports.handler = async (event) => {
       const imageKey = `blogs/${blogId}/${uuidv4()}.jpg`;
       
       await s3.putObject({
-        Bucket: process.env.MEDIA_BUCKET,
+        Bucket: MEDIA_BUCKET,
         Key: imageKey,
         Body: buffer,
         ContentType: 'image/jpeg',
@@ -63,7 +67,7 @@ exports.handler = async (event) => {
     };
     
     await dynamodb.put({
-      TableName: process.env.BLOGS_TABLE,
+      TableName: BLOGS_TABLE,
       Item: blogItem
     }).promise();
     

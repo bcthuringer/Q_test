@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
+import { ApiStack } from '../templates/api-stack';
+
+const app = new cdk.App();
+new ApiStack(app, 'QBlogApiStack', {
+  env: { 
+    account: process.env.CDK_DEFAULT_ACCOUNT, 
+    region: process.env.CDK_DEFAULT_REGION || 'us-east-1' 
+  },
+  description: 'API for Q_Blog personal journal',
+});

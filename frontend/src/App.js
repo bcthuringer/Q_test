@@ -16,9 +16,13 @@ import AdminRoute from './components/AdminRoute';
 import HomePage from './pages/HomePage';
 import BlogPage from './pages/BlogPage';
 import CreateBlogPage from './pages/CreateBlogPage';
+import CreateJournalPage from './pages/CreateJournalPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import NotFoundPage from './pages/NotFoundPage';
+import SearchPage from './pages/SearchPage';
+import CalendarPage from './pages/CalendarPage';
+import ExportPage from './pages/ExportPage';
 
 function App() {
   return (
@@ -35,7 +39,7 @@ function App() {
                 path="/create" 
                 element={
                   <ProtectedRoute>
-                    <CreateBlogPage />
+                    <CreateJournalPage />
                   </ProtectedRoute>
                 } 
               />
@@ -55,6 +59,30 @@ function App() {
                   </AdminRoute>
                 } 
               />
+              <Route 
+                path="/search" 
+                element={
+                  <ProtectedRoute>
+                    <SearchPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/calendar" 
+                element={
+                  <ProtectedRoute>
+                    <CalendarPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/export" 
+                element={
+                  <ProtectedRoute>
+                    <ExportPage />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
@@ -64,5 +92,7 @@ function App() {
     </Authenticator.Provider>
   );
 }
+
+export default App;
 
 export default App;

@@ -14,7 +14,7 @@ exports.handler = async (event) => {
   try {
     // Parse request body
     const body = JSON.parse(event.body);
-    const { title, content, imageBase64 } = body;
+    const { title, content, imageBase64, visibility = 'private', tags = [], mood } = body;
     
     if (!title || !content) {
       return {
@@ -33,24 +33,19 @@ exports.handler = async (event) => {
     const timestamp = new Date().toISOString();
     
     // Handle image upload if provided
-    let imageUrl = null;
+    let imageUrls = [];
     if (imageBase64) {
-      const buffer = Buffer.from(
-        imageBase64.replace(/^data:image\/\w+;base64,/, ''),
-        'base64'
-      );
-      
-      const imageKey = `blogs/${blogId}/${uuidv4()}.jpg`;
-      
-      await s3.putObject({
-        Bucket: MEDIA_BUCKET,
-        Key: imageKey,
-        Body: buffer,
-        ContentType: 'image/jpeg',
-        ACL: 'private'
-      }).promise();
-      
-      imageUrl = imageKey;
+      if (Array.isArray(imageBase64)) {
+        // Handle multiple images
+        for (const imgBase64 of imageBase64) {
+          const imageUrl = await uploadImage(imgBase64, blogId);
+          if (imageUrl) imageUrls.push(imageUrl);
+        }
+      } else {
+        // Handle single image
+        const imageUrl = await uploadImage(imageBase64, blogId);
+        if (imageUrl) imageUrls.push(imageUrl);
+      }
     }
     
     // Create blog post in DynamoDB
@@ -60,7 +55,10 @@ exports.handler = async (event) => {
       username,
       title,
       content,
-      imageUrl,
+      imageUrls,
+      visibility, // 'private', 'shared', or 'public'
+      tags,
+      mood,
       createdAt: timestamp,
       updatedAt: timestamp,
       status: 'PUBLISHED'
@@ -89,3 +87,30 @@ exports.handler = async (event) => {
     };
   }
 };
+
+/**
+ * Helper function to upload an image to S3
+ */
+async function uploadImage(imageBase64, blogId) {
+  try {
+    const buffer = Buffer.from(
+      imageBase64.replace(/^data:image\/\w+;base64,/, ''),
+      'base64'
+    );
+    
+    const imageKey = `blogs/${blogId}/${uuidv4()}.jpg`;
+    
+    await s3.putObject({
+      Bucket: MEDIA_BUCKET,
+      Key: imageKey,
+      Body: buffer,
+      ContentType: 'image/jpeg',
+      ACL: 'private'
+    }).promise();
+    
+    return imageKey;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return null;
+  }
+}

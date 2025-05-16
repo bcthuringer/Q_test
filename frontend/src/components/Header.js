@@ -18,7 +18,7 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <Link to="/" className="logo">
-          <h1>Q_Blog</h1>
+          <h1>Q_Journal</h1>
         </Link>
         
         <nav className="nav">
@@ -30,10 +30,19 @@ const Header = () => {
             {route === 'authenticated' ? (
               <>
                 <li className="nav-item">
-                  <Link to="/create" className="nav-link">Create Post</Link>
+                  <Link to="/create" className="nav-link">New Entry</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/calendar" className="nav-link">Calendar</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/search" className="nav-link">Search</Link>
                 </li>
                 <li className="nav-item">
                   <Link to="/profile" className="nav-link">Profile</Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/export" className="nav-link">Export</Link>
                 </li>
                 {isAdmin && (
                   <li className="nav-item">

@@ -1,0 +1,80 @@
+.rich-text-editor {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-toolbar {
+  border-bottom: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  padding: 6px;
+}
+
+.editor-content {
+  padding: 15px;
+  min-height: 200px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.editor-content h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.editor-content h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.editor-content h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.editor-content blockquote {
+  border-left: 3px solid #ccc;
+  margin-left: 0;
+  padding-left: 15px;
+  color: #666;
+  font-style: italic;
+}
+
+.editor-content ul, .editor-content ol {
+  margin-left: 20px;
+}
+
+.editor-content a {
+  color: #0078d4;
+  text-decoration: underline;
+}
+
+.editor-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 10px 0;
+}
+
+/* Focus styles */
+.editor-content:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    flex-wrap: wrap;
+  }
+  
+  .editor-content {
+    min-height: 150px;
+  }
+}

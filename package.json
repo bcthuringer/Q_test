@@ -1,5 +1,5 @@
 {
-  "name": "serverless-blog-platform",
+  "name": "q-blog",
   "version": "1.0.0",
   "description": "A serverless, auto-scaling personal blog website with user authentication and administrative approval",
   "scripts": {

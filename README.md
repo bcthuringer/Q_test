@@ -1,6 +1,6 @@
-# Serverless Blog Platform
+# Q_Blog
 
-A serverless, auto-scaling personal blog website with user authentication and administrative approval.
+A serverless, auto-scaling blog website with user authentication and administrative approval.
 
 ## Features
 
@@ -68,8 +68,8 @@ This project uses a modern serverless architecture:
 
 5. **Build and deploy the frontend**:
    ```bash
-   npm run build
-   npm run deploy
+   npm run build:frontend
+   npm run deploy:frontend
    ```
 
 6. **Create an admin user**:

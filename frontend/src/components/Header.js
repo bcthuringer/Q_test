@@ -18,7 +18,7 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <Link to="/" className="logo">
-          <h1>Serverless Blog</h1>
+          <h1>Q_Blog</h1>
         </Link>
         
         <nav className="nav">

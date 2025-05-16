@@ -1,0 +1,43 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - echo Logging in to AWS CodeArtifact...
+      - aws codeartifact login --tool npm --domain $CODEARTIFACT_DOMAIN --repository $CODEARTIFACT_REPO --region $AWS_REGION
+      - echo Installing dependencies...
+      - npm run install:all
+
+  pre_build:
+    commands:
+      - echo Running tests...
+      - echo No tests configured, skipping...
+
+  build:
+    commands:
+      - echo Building frontend...
+      - cd frontend
+      - ../scripts/load-env.sh
+      - npm run build
+      - echo Deploying to S3...
+      - aws s3 sync build/ s3://$WEBSITE_BUCKET --delete
+      - echo Creating CloudFront invalidation...
+      - aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, '$WEBSITE_BUCKET')].Id" --output text) --paths "/*"
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  base-directory: frontend/build
+  files:
+    - '**/*'
+
+cache:
+  paths:
+    - 'node_modules/**/*'
+    - 'frontend/node_modules/**/*'
+    - 'backend/node_modules/**/*'
+    - 'infrastructure/node_modules/**/*'

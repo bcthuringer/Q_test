@@ -1,14 +1,19 @@
 {
-  "name": "serverless-blog-infrastructure",
+  "name": "q-blog-infrastructure",
   "version": "0.1.0",
   "bin": {
-    "infrastructure": "bin/blog-serverless.js"
+    "infrastructure": "bin/blog-serverless.js",
+    "cicd": "bin/cicd-app.js",
+    "github-secret": "bin/github-secret-app.js"
   },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy:main": "cdk deploy BlogServerlessStack",
+    "deploy:cicd": "cdk deploy QBlogCICDStack",
+    "deploy:github-secret": "cdk deploy QBlogGitHubSecretStack"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

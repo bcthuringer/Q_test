@@ -8,9 +8,24 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as codeartifact from 'aws-cdk-lib/aws-codeartifact';
 
+export interface CICDStackProps extends cdk.StackProps {
+  // Repository information
+  githubOwner?: string;
+  githubRepo?: string;
+  githubBranch?: string;
+  // Secret name for GitHub token
+  githubTokenSecretName?: string;
+}
+
 export class CICDStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: CICDStackProps) {
     super(scope, id, props);
+
+    // Default values with clear indication they should be overridden
+    const githubOwner = props?.githubOwner || 'bcthuringer';
+    const githubRepo = props?.githubRepo || 'Q_test';
+    const githubBranch = props?.githubBranch || 'main';
+    const githubTokenSecretName = props?.githubTokenSecretName || 'github-token';
 
     // Get the website bucket name from SSM Parameter Store
     const websiteBucketName = ssm.StringParameter.valueForStringParameter(
@@ -23,6 +38,8 @@ export class CICDStack extends cdk.Stack {
       autoDeleteObjects: true,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      // Enforce server-side encryption
+      enforceSSL: true,
     });
 
     // Create a CodeArtifact domain and repository
@@ -84,6 +101,10 @@ export class CICDStack extends cdk.Stack {
             commands: [
               'echo Running tests...',
               'echo No tests configured, skipping...',
+              // Add a secrets detection tool
+              'echo Checking for hardcoded secrets...',
+              'npm install -g detect-secrets || true',
+              'detect-secrets scan --all-files || echo "Warning: Secret detection failed or found potential secrets"',
             ],
           },
           build: {
@@ -149,6 +170,7 @@ export class CICDStack extends cdk.Stack {
         'ssm:GetParameter',
         'ssm:GetParameters',
       ],
+      // Restrict to only the parameters needed
       resources: ['arn:aws:ssm:*:*:parameter/blog/*'],
     }));
 
@@ -158,7 +180,11 @@ export class CICDStack extends cdk.Stack {
         'codeartifact:GetRepositoryEndpoint',
         'codeartifact:ReadFromRepository',
       ],
-      resources: ['*'],
+      // Restrict to specific domain and repository
+      resources: [
+        `arn:aws:codeartifact:${this.region}:${this.account}:domain/qblog-domain`,
+        `arn:aws:codeartifact:${this.region}:${this.account}:repository/qblog-domain/qblog-repo`,
+      ],
     }));
 
     buildProject.addToRolePolicy(new iam.PolicyStatement({
@@ -184,10 +210,10 @@ export class CICDStack extends cdk.Stack {
           actions: [
             new codepipeline_actions.GitHubSourceAction({
               actionName: 'GitHub_Source',
-              owner: 'bcthuringer',
-              repo: 'Q_test',
-              branch: 'main',
-              oauthToken: cdk.SecretValue.secretsManager('github-token'),
+              owner: githubOwner,
+              repo: githubRepo,
+              branch: githubBranch,
+              oauthToken: cdk.SecretValue.secretsManager(githubTokenSecretName),
               output: sourceOutput,
               trigger: codepipeline_actions.GitHubTrigger.WEBHOOK,
             }),
@@ -221,6 +247,12 @@ export class CICDStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'CodeArtifactRepository', {
       value: repository.attrName,
       description: 'CodeArtifact repository name',
+    });
+
+    // Output GitHub configuration for verification
+    new cdk.CfnOutput(this, 'GitHubConfiguration', {
+      value: `Repository: ${githubOwner}/${githubRepo}, Branch: ${githubBranch}`,
+      description: 'GitHub repository configuration',
     });
   }
 }

@@ -9,12 +9,6 @@ if ! command -v aws &> /dev/null; then
     exit 1
 fi
 
-# Check if jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "jq is not installed. Please install it first."
-    exit 1
-fi
-
 # Set the AWS region
 AWS_REGION=${AWS_REGION:-"us-east-1"}
 

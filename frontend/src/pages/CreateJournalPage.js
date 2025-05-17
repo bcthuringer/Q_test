@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API, Storage } from 'aws-amplify';
-import RichTextEditor from '../components/RichTextEditor';
+import SimpleTextEditor from '../components/SimpleTextEditor';
 import '../styles/CreateJournalPage.css';
 
 const MOOD_OPTIONS = [
@@ -60,8 +60,8 @@ const CreateJournalPage = () => {
     setImagePreviews(newPreviews);
   };
   
-  const handleContentChange = (htmlContent) => {
-    setContent(htmlContent);
+  const handleContentChange = (textContent) => {
+    setContent(textContent);
   };
   
   const handleSubmit = async (e) => {
@@ -162,7 +162,7 @@ const CreateJournalPage = () => {
           
           <div className="form-group">
             <label htmlFor="content">Journal Entry</label>
-            <RichTextEditor 
+            <SimpleTextEditor 
               initialContent={content}
               onChange={handleContentChange}
             />

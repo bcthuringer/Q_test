@@ -1,12 +1,16 @@
-.rich-text-editor {
+.simple-rich-editor {
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 20px;
+<<<<<<< HEAD
 }
 
 .editor-wrapper {
   display: flex;
   flex-direction: column;
+=======
+  background-color: #fff;
+>>>>>>> dd533ea (fixed calendar)
 }
 
 .editor-toolbar {
@@ -15,15 +19,31 @@
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   padding: 6px;
+  display: flex;
+  gap: 5px;
 }
 
-.editor-content {
+.toolbar-button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toolbar-button:hover {
+  background-color: #f0f0f0;
+}
+
+.editor-container {
   padding: 15px;
   min-height: 200px;
   font-size: 16px;
   line-height: 1.6;
 }
 
+<<<<<<< HEAD
 /* Target content elements */
 .editor-content h1 {
   font-size: 24px;
@@ -63,10 +83,22 @@
   margin: 10px 0;
 }
 
+=======
+>>>>>>> dd533ea (fixed calendar)
 /* Focus styles */
-.editor-content:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+.DraftEditor-root {
+  height: 100%;
+  min-height: 180px;
+}
+
+.public-DraftEditorPlaceholder-root {
+  color: #999;
+  position: absolute;
+  pointer-events: none;
+}
+
+.public-DraftEditor-content {
+  min-height: 180px;
 }
 
 /* Responsive adjustments */
@@ -75,7 +107,7 @@
     flex-wrap: wrap;
   }
   
-  .editor-content {
+  .editor-container {
     min-height: 150px;
   }
 }

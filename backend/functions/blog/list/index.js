@@ -1,3 +1,18 @@
+/**
+ * Blog Post Listing Lambda Function
+ * 
+ * This Lambda function retrieves blog posts from DynamoDB with support for
+ * pagination, filtering, and sorting. It demonstrates advanced DynamoDB query
+ * techniques in a serverless application.
+ * 
+ * Learning points:
+ * - Working with DynamoDB queries and filters
+ * - Implementing pagination in serverless APIs
+ * - Using GSIs (Global Secondary Indexes) for efficient queries
+ * - Building complex filter expressions
+ * - Handling query parameters in API Gateway
+ */
+
 const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -6,30 +21,39 @@ const BLOGS_TABLE = process.env.BLOGS_TABLE;
 
 /**
  * Lambda function to list blog posts with pagination and filtering
+ * 
+ * @param {Object} event - API Gateway event containing request data
+ * @returns {Object} - API Gateway response object with blog posts
  */
 exports.handler = async (event) => {
   try {
     // Get user ID from Cognito authorizer
+    // This is used to filter posts by the current user
     const userId = event.requestContext.authorizer.claims.sub;
     
-    // Parse query parameters
+    // Parse query parameters with defaults
+    // These parameters allow for flexible querying of blog posts
     const queryParams = event.queryStringParameters || {};
-    const limit = parseInt(queryParams.limit) || 10;
-    const lastEvaluatedKey = queryParams.nextToken ? JSON.parse(decodeURIComponent(queryParams.nextToken)) : undefined;
-    const visibility = queryParams.visibility || 'all';
-    const tag = queryParams.tag;
-    const startDate = queryParams.startDate;
-    const endDate = queryParams.endDate;
-    const mood = queryParams.mood;
+    const limit = parseInt(queryParams.limit) || 10;  // Number of items per page
+    const lastEvaluatedKey = queryParams.nextToken 
+      ? JSON.parse(decodeURIComponent(queryParams.nextToken)) 
+      : undefined;  // Pagination token
+    const visibility = queryParams.visibility || 'all';  // Filter by visibility
+    const tag = queryParams.tag;  // Filter by tag
+    const startDate = queryParams.startDate;  // Filter by date range start
+    const endDate = queryParams.endDate;  // Filter by date range end
+    const mood = queryParams.mood;  // Filter by mood
     
-    // Determine which index to use based on query parameters
+    // Build the DynamoDB query parameters
     let params = {
       TableName: BLOGS_TABLE,
-      Limit: limit
+      Limit: limit  // Maximum number of items to return
     };
     
     // Filter by user ID (for personal journal entries)
+    // This demonstrates using different query strategies based on parameters
     if (visibility === 'private' || visibility === 'all') {
+      // Use the GSI to efficiently query by userId
       params.IndexName = 'userIdIndex';
       params.KeyConditionExpression = 'userId = :userId';
       params.ExpressionAttributeValues = {
@@ -42,7 +66,8 @@ exports.handler = async (event) => {
         params.ExpressionAttributeValues[':visibility'] = visibility;
       }
     } else if (visibility === 'public') {
-      // For public posts, use a different query approach
+      // For public posts, use a filter expression
+      // Note: In a production app, you might want a GSI for public posts
       params.FilterExpression = 'visibility = :visibility';
       params.ExpressionAttributeValues = {
         ':visibility': 'public'
@@ -50,6 +75,7 @@ exports.handler = async (event) => {
     }
     
     // Add date range filter if provided
+    // This demonstrates building complex filter expressions
     if (startDate && endDate) {
       if (params.FilterExpression) {
         params.FilterExpression += ' AND createdAt BETWEEN :startDate AND :endDate';
@@ -61,6 +87,7 @@ exports.handler = async (event) => {
     }
     
     // Add tag filter if provided
+    // This demonstrates using the contains function for array fields
     if (tag) {
       if (params.FilterExpression) {
         params.FilterExpression += ' AND contains(tags, :tag)';
@@ -81,30 +108,34 @@ exports.handler = async (event) => {
     }
     
     // Add pagination token if provided
+    // This enables retrieving results beyond the initial query limit
     if (lastEvaluatedKey) {
       params.ExclusiveStartKey = lastEvaluatedKey;
     }
     
-    // Query DynamoDB
+    // Execute the query against DynamoDB
     const result = await dynamodb.query(params).promise();
     
-    // Prepare response
+    // Prepare the response object
     const response = {
-      items: result.Items,
-      count: result.Count
+      items: result.Items,  // The blog posts
+      count: result.Count   // Number of items returned
     };
     
     // Add pagination token if more results exist
+    // This allows the client to request the next page of results
     if (result.LastEvaluatedKey) {
       response.nextToken = encodeURIComponent(JSON.stringify(result.LastEvaluatedKey));
     }
     
+    // Return successful response with blog posts
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(response)
     };
   } catch (error) {
+    // Log the error for debugging but return a sanitized message
     console.error('Error listing blog posts:', error);
     return {
       statusCode: 500,

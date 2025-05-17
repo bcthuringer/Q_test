@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Amplify } from 'aws-amplify';
 import App from './App';
 import './styles/index.css';
+import './styles/global-fixes.css'; // Import global fixes for RTL/LTR issues
 import config from './config';
 
 // Configure Amplify with values from config

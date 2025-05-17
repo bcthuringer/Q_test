@@ -42,15 +42,16 @@ const RichTextEditor = ({ initialContent = '', onChange }) => {
     textAlign: {
       inDropdown: false,
       options: ['left', 'center', 'right', 'justify'],
-      left: { className: 'rdw-text-align-option' },
-      center: { className: 'rdw-text-align-option' },
-      right: { className: 'rdw-text-align-option' },
-      justify: { className: 'rdw-text-align-option' },
     },
   };
   
+  // Fix for cursor position - use minimal styling that won't affect cursor
+  const editorStyle = {
+    textAlign: 'left',
+  };
+  
   return (
-    <div className="rich-text-editor" dir="ltr">
+    <div className="rich-text-editor">
       <Editor
         editorState={editorState}
         onEditorStateChange={handleEditorChange}
@@ -59,9 +60,10 @@ const RichTextEditor = ({ initialContent = '', onChange }) => {
         toolbarClassName="editor-toolbar"
         wrapperClassName="editor-wrapper"
         placeholder="Write your journal entry here..."
-        textAlignment="left"
-        defaultTextAlignment="left"
-        ariaLabel="Rich Text Editor"
+        editorStyle={editorStyle}
+        stripPastedStyles={false}
+        spellCheck={true}
+        preserveSelectionOnBlur={true}
       />
     </div>
   );

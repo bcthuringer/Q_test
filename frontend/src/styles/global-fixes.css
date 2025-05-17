@@ -1,0 +1,18 @@
+/* Global fixes for form elements */
+input, textarea, select, button {
+  text-align: left;
+}
+
+/* Basic styling for the editor - avoid direction properties */
+.DraftEditor-root,
+.DraftEditor-editorContainer,
+.public-DraftEditor-content {
+  text-align: left;
+}
+
+/* Fix for placeholder text */
+.public-DraftEditorPlaceholder-root {
+  text-align: left;
+  left: 15px;
+  right: auto;
+}

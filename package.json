@@ -1,17 +1,50 @@
 {
   "name": "q-blog",
   "version": "1.0.0",
-  "description": "A serverless, auto-scaling personal blog website with user authentication and administrative approval",
+  "description": "Serverless blog platform with user authentication and administrative approval",
+  "main": "index.js",
   "scripts": {
-    "install:all": "npm run install:backend && npm run install:frontend && npm run install:infrastructure",
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install",
-    "install:infrastructure": "cd infrastructure && npm install",
-    "deploy:infrastructure": "cd infrastructure && cdk deploy",
-    "build:frontend": "cd frontend && npm run build",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install && cd ../infrastructure && npm install",
+    "deploy:infrastructure": "cd infrastructure && npm run deploy",
+    "deploy:github-secret": "cd infrastructure && npm run deploy:github-secret",
+    "deploy:cicd": "cd infrastructure && npm run deploy:cicd",
     "deploy:frontend": "cd frontend && npm run deploy",
-    "start:frontend": "cd frontend && npm start"
+    "deploy:monitoring": "bash scripts/deploy-monitoring.sh",
+    "build:frontend": "cd frontend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend && npm run test:infrastructure",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:infrastructure": "cd infrastructure && npm test"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/q-blog.git"
+  },
+  "keywords": [
+    "serverless",
+    "aws",
+    "blog",
+    "authentication",
+    "react",
+    "dynamodb",
+    "lambda",
+    "cognito",
+    "api-gateway",
+    "s3",
+    "cloudfront",
+    "cdk"
+  ],
+  "author": "Bradley",
+  "contributors": [
+    "Amazon Q (May 2025)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/q-blog/issues"
+  },
+  "homepage": "https://github.com/yourusername/q-blog#readme",
+  "devDependencies": {
+    "eslint": "^8.38.0",
+    "prettier": "^2.8.7"
+  }
 }

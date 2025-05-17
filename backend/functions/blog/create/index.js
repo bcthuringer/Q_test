@@ -11,12 +11,14 @@
  * - Using S3 for media storage
  * - Input validation and error handling
  * - Using environment variables for configuration
+ * - Publishing custom CloudWatch metrics for monitoring
  */
 
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
+const cloudwatch = new AWS.CloudWatch();
 
 // Get parameters from environment variables
 // This allows for different configurations in different environments
@@ -30,6 +32,8 @@ const MEDIA_BUCKET = process.env.MEDIA_BUCKET;
  * @returns {Object} - API Gateway response object
  */
 exports.handler = async (event) => {
+  const startTime = Date.now();
+  
   try {
     // Parse request body to get blog post data
     const body = JSON.parse(event.body);
@@ -57,17 +61,27 @@ exports.handler = async (event) => {
     // Handle image upload if provided
     // Images are sent as base64-encoded strings and uploaded to S3
     let imageUrls = [];
+    let totalImageSize = 0;
+    
     if (imageBase64) {
       if (Array.isArray(imageBase64)) {
         // Handle multiple images
         for (const imgBase64 of imageBase64) {
           const imageUrl = await uploadImage(imgBase64, blogId);
-          if (imageUrl) imageUrls.push(imageUrl);
+          if (imageUrl) {
+            imageUrls.push(imageUrl);
+            // Calculate image size for metrics
+            totalImageSize += Buffer.from(imgBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64').length;
+          }
         }
       } else {
         // Handle single image
         const imageUrl = await uploadImage(imageBase64, blogId);
-        if (imageUrl) imageUrls.push(imageUrl);
+        if (imageUrl) {
+          imageUrls.push(imageUrl);
+          // Calculate image size for metrics
+          totalImageSize += Buffer.from(imageBase64.replace(/^data:image\/\w+;base64,/, ''), 'base64').length;
+        }
       }
     }
     
@@ -94,6 +108,16 @@ exports.handler = async (event) => {
       Item: blogItem
     }).promise();
     
+    // Publish custom metrics to CloudWatch
+    await publishMetrics({
+      userId,
+      contentLength: content.length,
+      hasImages: imageUrls.length > 0,
+      imageCount: imageUrls.length,
+      totalImageSize,
+      processingTime: Date.now() - startTime
+    });
+    
     // Return success response with the new blog ID
     return {
       statusCode: 201,
@@ -107,6 +131,22 @@ exports.handler = async (event) => {
   } catch (error) {
     // Log the full error for debugging but return a sanitized message
     console.error('Error creating blog post:', error);
+    
+    // Publish error metric
+    try {
+      await cloudwatch.putMetricData({
+        Namespace: 'Q_Blog',
+        MetricData: [{
+          MetricName: 'BlogPostCreationErrors',
+          Value: 1,
+          Unit: 'Count',
+          Timestamp: new Date()
+        }]
+      }).promise();
+    } catch (metricError) {
+      console.error('Failed to publish error metric:', metricError);
+    }
+    
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -151,5 +191,68 @@ async function uploadImage(imageBase64, blogId) {
     // Log the error but don't fail the entire request
     console.error('Error uploading image:', error);
     return null;
+  }
+}
+
+/**
+ * Publishes custom metrics to CloudWatch for monitoring
+ * 
+ * @param {Object} metrics - Metrics to publish
+ */
+async function publishMetrics(metrics) {
+  try {
+    const metricData = [
+      {
+        MetricName: 'BlogPostCreations',
+        Value: 1,
+        Unit: 'Count',
+        Dimensions: [
+          {
+            Name: 'UserId',
+            Value: metrics.userId
+          }
+        ],
+        Timestamp: new Date()
+      },
+      {
+        MetricName: 'ContentLength',
+        Value: metrics.contentLength,
+        Unit: 'Bytes',
+        Timestamp: new Date()
+      },
+      {
+        MetricName: 'ProcessingTime',
+        Value: metrics.processingTime,
+        Unit: 'Milliseconds',
+        Timestamp: new Date()
+      }
+    ];
+    
+    // Add image metrics if images were uploaded
+    if (metrics.hasImages) {
+      metricData.push({
+        MetricName: 'ImageUploads',
+        Value: metrics.imageCount,
+        Unit: 'Count',
+        Timestamp: new Date()
+      });
+      
+      metricData.push({
+        MetricName: 'ImageUploadSize',
+        Value: metrics.totalImageSize,
+        Unit: 'Bytes',
+        Timestamp: new Date()
+      });
+    }
+    
+    await cloudwatch.putMetricData({
+      Namespace: 'Q_Blog',
+      MetricData: metricData
+    }).promise();
+    
+    console.log('Published blog creation metrics to CloudWatch');
+  } catch (error) {
+    // Log the error but don't fail the function
+    console.error('Error publishing metrics:', error);
   }
 }

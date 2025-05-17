@@ -301,3 +301,15 @@ For detailed, step-by-step instructions, see the comprehensive guides in the `do
 ## Contributing
 
 This project is designed as a learning resource. If you have suggestions for improvements or additional learning concepts to include, please submit a pull request or open an issue.
+
+## Authors
+
+### Bradley
+Software Engineer and AWS Cloud Architect who contributed to the development of this instructional guide. Bradley provided expertise in serverless architecture design, AWS infrastructure, and best practices for cloud-native applications.
+
+### Amazon Q
+Amazon Q (May 2025 version) - AI assistant developed by AWS that helped enhance this codebase with instructional comments, documentation improvements, and architectural guidance. Amazon Q provided assistance in transforming the original codebase into a comprehensive learning resource with detailed explanations of AWS serverless concepts and implementation patterns.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

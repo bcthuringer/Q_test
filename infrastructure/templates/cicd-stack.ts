@@ -32,7 +32,7 @@ export class CICDStack extends cdk.Stack {
       this, '/blog/storage/websiteBucket'
     );
 
-    // Create an artifact bucket for the pipeline
+    // Create an artifact bucket for the pipeline with lifecycle rules
     const artifactBucket = new s3.Bucket(this, 'ArtifactBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
@@ -40,6 +40,13 @@ export class CICDStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       // Enforce server-side encryption
       enforceSSL: true,
+      // Add lifecycle rules to automatically delete old artifacts
+      lifecycleRules: [
+        {
+          expiration: cdk.Duration.days(30),
+          abortIncompleteMultipartUploadAfter: cdk.Duration.days(7),
+        },
+      ],
     });
 
     // Create a CodeArtifact domain and repository
@@ -55,10 +62,11 @@ export class CICDStack extends cdk.Stack {
     });
     repository.addDependsOn(domain);
 
-    // Create a CodeBuild project
+    // Create a CodeBuild project with optimized compute type
     const buildProject = new codebuild.PipelineProject(this, 'BuildProject', {
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        computeType: codebuild.ComputeType.SMALL, // Use SMALL instead of default MEDIUM
         privileged: true, // Required for Docker commands
       },
       environmentVariables: {

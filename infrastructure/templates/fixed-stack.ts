@@ -8,6 +8,8 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export class FixedBlogStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -40,6 +42,20 @@ export class FixedBlogStack extends cdk.Stack {
         },
       ],
       removalPolicy: cdk.RemovalPolicy.RETAIN,
+      // Add lifecycle rules for media bucket to manage storage costs
+      lifecycleRules: [
+        {
+          // Transition objects to Infrequent Access after 30 days
+          transitions: [
+            {
+              storageClass: s3.StorageClass.INFREQUENT_ACCESS,
+              transitionAfter: cdk.Duration.days(30),
+            }
+          ],
+          // Clean up incomplete multipart uploads
+          abortIncompleteMultipartUploadAfter: cdk.Duration.days(7),
+        }
+      ],
     });
 
     // CloudFront Origin Access Identity for media bucket
@@ -119,25 +135,61 @@ export class FixedBlogStack extends cdk.Stack {
       },
     });
 
-    // DynamoDB Tables
+    // DynamoDB Tables with cost-optimized provisioned capacity
     const usersTable = new dynamodb.Table(this, 'UsersTable', {
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      billingMode: dynamodb.BillingMode.PROVISIONED,
+      readCapacity: 5,
+      writeCapacity: 5,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+    
+    // Add auto-scaling to users table
+    const usersReadScaling = usersTable.autoScaleReadCapacity({ 
+      minCapacity: 5, 
+      maxCapacity: 20 
+    });
+    usersReadScaling.scaleOnUtilization({ targetUtilizationPercent: 70 });
+    
+    const usersWriteScaling = usersTable.autoScaleWriteCapacity({ 
+      minCapacity: 5, 
+      maxCapacity: 20 
+    });
+    usersWriteScaling.scaleOnUtilization({ targetUtilizationPercent: 70 });
 
     const blogsTable = new dynamodb.Table(this, 'BlogsTable', {
       partitionKey: { name: 'blogId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'createdAt', type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      billingMode: dynamodb.BillingMode.PROVISIONED,
+      readCapacity: 5,
+      writeCapacity: 5,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+    
+    // Add auto-scaling to blogs table
+    const blogsReadScaling = blogsTable.autoScaleReadCapacity({ 
+      minCapacity: 5, 
+      maxCapacity: 20 
+    });
+    blogsReadScaling.scaleOnUtilization({ targetUtilizationPercent: 70 });
+    
+    const blogsWriteScaling = blogsTable.autoScaleWriteCapacity({ 
+      minCapacity: 5, 
+      maxCapacity: 20 
+    });
+    blogsWriteScaling.scaleOnUtilization({ targetUtilizationPercent: 70 });
 
     blogsTable.addGlobalSecondaryIndex({
       indexName: 'userIdIndex',
       partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'createdAt', type: dynamodb.AttributeType.STRING },
       projectionType: dynamodb.ProjectionType.ALL,
+    });
+
+    // Add CloudWatch Logs retention policy
+    const logGroup = new logs.LogGroup(this, 'BlogAppLogGroup', {
+      retention: logs.RetentionDays.ONE_WEEK, // Set log retention to one week
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // Store configuration values in SSM Parameter Store
@@ -169,6 +221,13 @@ export class FixedBlogStack extends cdk.Stack {
       parameterName: '/blog/distribution/domain',
       stringValue: distribution.distributionDomainName,
       description: 'CloudFront distribution domain name',
+    });
+
+    // Store CloudFront distribution ID for invalidations
+    new ssm.StringParameter(this, 'CloudFrontDistributionIdParameter', {
+      parameterName: '/blog/distribution/id',
+      stringValue: distribution.distributionId,
+      description: 'CloudFront distribution ID',
     });
 
     // Outputs

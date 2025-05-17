@@ -12,6 +12,7 @@ A serverless, auto-scaling blog website with user authentication and administrat
 - Responsive frontend design
 - Secure configuration management
 - CI/CD pipeline with AWS CodePipeline, CodeBuild, and CodeArtifact
+- Cost-optimized infrastructure
 
 ## Architecture
 
@@ -19,13 +20,14 @@ This project uses a modern serverless architecture:
 
 - **Frontend**: React.js application hosted on AWS S3 and CloudFront
 - **Backend**: AWS Lambda functions with API Gateway
-- **Database**: Amazon DynamoDB for scalable NoSQL storage
+- **Database**: Amazon DynamoDB with provisioned capacity and auto-scaling
 - **Authentication**: Amazon Cognito for user management
-- **Storage**: Amazon S3 for media uploads
-- **CDN**: CloudFront for content delivery
+- **Storage**: Amazon S3 for media uploads with lifecycle policies
+- **CDN**: CloudFront for content delivery (North America and Europe regions)
 - **Infrastructure**: AWS CDK for infrastructure as code
 - **Secret Management**: AWS SSM Parameter Store for configuration
-- **CI/CD**: AWS CodePipeline, CodeBuild, and CodeArtifact
+- **CI/CD**: AWS CodePipeline, CodeBuild (small instance), and CodeArtifact
+- **Logging**: CloudWatch Logs with one-week retention policy
 
 ## Directory Structure
 
@@ -106,8 +108,27 @@ The CI/CD pipeline automatically:
 3. Installs dependencies
 4. Builds the frontend application
 5. Deploys to S3
-6. Invalidates the CloudFront cache
-7. Stores artifacts in CodeArtifact
+6. Invalidates the CloudFront cache using the stored distribution ID
+7. Stores artifacts in CodeArtifact (with 30-day retention policy)
+
+## Cost Optimizations
+
+This project implements several cost optimizations:
+
+1. **DynamoDB Provisioned Capacity**: Uses provisioned capacity with auto-scaling instead of on-demand pricing
+   - Initial capacity: 5 read/write units
+   - Auto-scales between 5-20 units based on 70% utilization
+   
+2. **S3 Lifecycle Rules**:
+   - Media bucket: Transitions objects to Infrequent Access after 30 days
+   - Artifact bucket: Automatically deletes objects after 30 days
+   - Both buckets: Clean up incomplete multipart uploads after 7 days
+   
+3. **CloudFront Optimization**: Uses PRICE_CLASS_100 (North America and Europe only)
+
+4. **CodeBuild Optimization**: Uses SMALL compute type instead of MEDIUM
+
+5. **CloudWatch Logs**: Implements one-week retention policy instead of indefinite retention
 
 ## Security Best Practices
 
@@ -124,9 +145,18 @@ This project follows these security best practices:
 ## Estimated Costs
 
 For a small deployment with less than 5 users posting once per day:
-- Approximately $0.55 per month (most services within AWS Free Tier)
-- After free tier: $1-2 per month
-- Additional CI/CD costs: ~$1-5 per month depending on usage
+- **First Year (with AWS Free Tier)**: ~$1-2 per month
+- **After Free Tier**: ~$7-10 per month
+
+Cost breakdown:
+- DynamoDB: ~$5.84/month (mostly covered by free tier in first year)
+- S3 Storage: ~$0.05/month
+- CloudFront: ~$0.085/month
+- Lambda Functions: ~$0.30/month
+- Cognito: Free for first 50,000 users
+- API Gateway: ~$0.35/month
+- CloudWatch Logs: ~$0.10/month (with 1-week retention)
+- CI/CD: ~$1.00/month
 
 ## Getting Started
 

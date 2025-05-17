@@ -24,7 +24,7 @@ phases:
       - echo Deploying to S3...
       - aws s3 sync build/ s3://$WEBSITE_BUCKET --delete
       - echo Creating CloudFront invalidation...
-      - aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Aliases.Items, '$WEBSITE_BUCKET')].Id" --output text) --paths "/*"
+      - aws cloudfront create-invalidation --distribution-id $(aws ssm get-parameter --name "/blog/distribution/id" --query "Parameter.Value" --output text) --paths "/*"
 
   post_build:
     commands:

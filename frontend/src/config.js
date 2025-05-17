@@ -8,51 +8,47 @@ const config = {
   // AWS Region
   region: process.env.REACT_APP_AWS_REGION || 'us-east-1',
   
-  // Cognito User Pool
+  // Cognito User Pool - no default values for security
   userPoolId: process.env.REACT_APP_USER_POOL_ID,
   userPoolClientId: process.env.REACT_APP_USER_POOL_CLIENT_ID,
   
-  // S3 Buckets
+  // S3 Buckets - no default values for security
   mediaBucket: process.env.REACT_APP_MEDIA_BUCKET,
   websiteBucket: process.env.REACT_APP_WEBSITE_BUCKET,
   
-  // CloudFront
+  // CloudFront - no default values for security
   cloudfrontDomain: process.env.REACT_APP_CLOUDFRONT_DOMAIN,
   
-  // API Gateway (now implemented)
+  // API Gateway - no default values for security
   apiEndpoint: process.env.REACT_APP_API_ENDPOINT,
   
   // Feature flags
   features: {
-    // Set to true since API Gateway is now deployed
-    apiEnabled: true
+    // Determine if API is enabled based on whether endpoint exists
+    apiEnabled: !!process.env.REACT_APP_API_ENDPOINT
   }
 };
 
-// For local development, provide fallback values if environment variables are not set
-// SECURITY NOTE: These are development-only values and do not provide access to production resources
+// For local development, provide safe placeholder values if environment variables are not set
+// These placeholders don't expose any real credentials
 if (!config.userPoolId) {
-  console.warn('REACT_APP_USER_POOL_ID not set. Using development fallback value.');
-  // Use a clearly marked development value
-  config.userPoolId = 'DEV_ONLY-us-east-1_1zABzmEZz';
+  console.warn('REACT_APP_USER_POOL_ID not set. Application may not function correctly.');
+  config.userPoolId = 'missing-user-pool-id';
 }
 
 if (!config.userPoolClientId) {
-  console.warn('REACT_APP_USER_POOL_CLIENT_ID not set. Using development fallback value.');
-  // Use a clearly marked development value
-  config.userPoolClientId = 'DEV_ONLY-7hfns9lovoob0dqg0dqg42bu9n';
+  console.warn('REACT_APP_USER_POOL_CLIENT_ID not set. Application may not function correctly.');
+  config.userPoolClientId = 'missing-client-id';
 }
 
 if (!config.mediaBucket) {
-  console.warn('REACT_APP_MEDIA_BUCKET not set. Using development fallback value.');
-  // Use a clearly marked development value
-  config.mediaBucket = 'DEV_ONLY-blogserverlessstack-mediabucket';
+  console.warn('REACT_APP_MEDIA_BUCKET not set. Media features may not function correctly.');
+  config.mediaBucket = 'missing-media-bucket';
 }
 
 if (!config.apiEndpoint) {
-  console.warn('REACT_APP_API_ENDPOINT not set. Using development fallback value.');
-  // Use a clearly marked development value
-  config.apiEndpoint = 'https://yt2zvia5lf.execute-api.us-east-1.amazonaws.com/prod';
+  console.warn('REACT_APP_API_ENDPOINT not set. API features will be disabled.');
+  config.features.apiEnabled = false;
 }
 
 export default config;

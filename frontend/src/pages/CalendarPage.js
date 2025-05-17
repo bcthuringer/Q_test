@@ -33,20 +33,20 @@ const CalendarPage = () => {
       console.error('Error fetching blogs for calendar:', err);
       setError('Failed to load blogs. Please try again.');
       
-      // Fallback: Use hardcoded blog post from DynamoDB
+      // Fallback: Use sample blog post
       try {
-        const hardcodedBlog = {
-          blogId: "default-blog-001",
-          title: "Welcome to My Blog",
-          content: "<p>This is my first blog post using the Q_Blog platform!</p>",
-          username: "bradley",
-          createdAt: "2025-05-17T00:55:00Z",
-          tags: ["welcome", "first-post", "introduction"],
-          mood: "Excited",
+        const sampleBlog = {
+          blogId: "sample-blog-001",
+          title: "Sample Blog Post",
+          content: "<p>This is a sample blog post that appears when the API is unavailable.</p>",
+          username: "system",
+          createdAt: new Date().toISOString(),
+          tags: ["sample", "placeholder"],
+          mood: "Neutral",
           visibility: "public"
         };
         
-        setBlogs([hardcodedBlog]);
+        setBlogs([sampleBlog]);
         setError(null);
       } catch (fallbackErr) {
         console.error('Even fallback failed:', fallbackErr);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API } from 'aws-amplify';
 import '../styles/HomePage.css';
+import config from '../config';
 
 const HomePage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -19,26 +20,10 @@ const HomePage = () => {
       setLoading(true);
       const queryParams = token ? { nextToken: token } : {};
       
-      // Make direct API call to get blogs without authentication
+      // Make API call to get blogs
       console.log('Fetching blogs from API...');
       
-      // First try: Use the scan endpoint directly
-      try {
-        const response = await fetch('https://yt2zvia5lf.execute-api.us-east-1.amazonaws.com/prod/blogs');
-        const data = await response.json();
-        console.log('Direct API response:', data);
-        
-        if (data.items && data.items.length > 0) {
-          setBlogs(data.items);
-          setError(null);
-          setLoading(false);
-          return;
-        }
-      } catch (directErr) {
-        console.log('Direct API call failed, trying Amplify API:', directErr);
-      }
-      
-      // Second try: Use the Amplify API
+      // Use the configured API endpoint from config
       const response = await API.get('blogApi', '/blogs', { 
         queryStringParameters: queryParams,
         headers: {
@@ -65,20 +50,20 @@ const HomePage = () => {
       console.error('Error fetching blogs:', err);
       setError('Failed to load blog posts. Please try again later.');
       
-      // Fallback: Use hardcoded blog post from DynamoDB
+      // Fallback: Use sample blog post
       try {
-        const hardcodedBlog = {
-          blogId: "default-blog-001",
-          title: "Welcome to My Blog",
-          content: "<p>This is my first blog post using the Q_Blog platform! I'm excited to start journaling my thoughts and experiences here.</p><p>The platform offers some great features:</p><ul><li>Rich text editing</li><li>Image uploads</li><li>Tags for organization</li><li>Privacy controls</li></ul><p>I'm looking forward to creating more content soon!</p>",
-          username: "bradley",
-          createdAt: "2025-05-17T00:55:00Z",
-          tags: ["welcome", "first-post", "introduction"],
-          mood: "Excited",
+        const sampleBlog = {
+          blogId: "sample-blog-001",
+          title: "Sample Blog Post",
+          content: "<p>This is a sample blog post that appears when the API is unavailable.</p>",
+          username: "system",
+          createdAt: new Date().toISOString(),
+          tags: ["sample", "placeholder"],
+          mood: "Neutral",
           visibility: "public"
         };
         
-        setBlogs([hardcodedBlog]);
+        setBlogs([sampleBlog]);
         setError(null);
       } catch (fallbackErr) {
         console.error('Even fallback failed:', fallbackErr);
@@ -131,7 +116,7 @@ const HomePage = () => {
                   {blog.imageUrls && blog.imageUrls.length > 0 && (
                     <div className="blog-image">
                       <img 
-                        src={`https://${process.env.REACT_APP_MEDIA_BUCKET}.s3.amazonaws.com/${blog.imageUrls[0]}`} 
+                        src={`https://${config.mediaBucket}.s3.amazonaws.com/${blog.imageUrls[0]}`} 
                         alt={blog.title} 
                       />
                     </div>
@@ -158,7 +143,11 @@ const HomePage = () => {
           ) : !loading ? (
             <div className="no-blogs">
               <p>No blog posts found.</p>
-              <p>API endpoint: {process.env.REACT_APP_API_ENDPOINT || 'Not set'}</p>
+              {config.features.apiEnabled ? (
+                <p>API endpoint is configured but returned no data.</p>
+              ) : (
+                <p>API endpoint is not configured. Please check your environment settings.</p>
+              )}
               {debugInfo && (
                 <div className="debug-info">
                   <h4>Debug Info:</h4>

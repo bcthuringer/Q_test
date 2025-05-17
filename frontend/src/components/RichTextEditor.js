@@ -40,12 +40,17 @@ const RichTextEditor = ({ initialContent = '', onChange }) => {
       options: ['unordered', 'ordered', 'indent', 'outdent'],
     },
     textAlign: {
+      inDropdown: false,
       options: ['left', 'center', 'right', 'justify'],
+      left: { className: 'rdw-text-align-option' },
+      center: { className: 'rdw-text-align-option' },
+      right: { className: 'rdw-text-align-option' },
+      justify: { className: 'rdw-text-align-option' },
     },
   };
   
   return (
-    <div className="rich-text-editor">
+    <div className="rich-text-editor" dir="ltr">
       <Editor
         editorState={editorState}
         onEditorStateChange={handleEditorChange}
@@ -54,6 +59,9 @@ const RichTextEditor = ({ initialContent = '', onChange }) => {
         toolbarClassName="editor-toolbar"
         wrapperClassName="editor-wrapper"
         placeholder="Write your journal entry here..."
+        textAlignment="left"
+        defaultTextAlignment="left"
+        ariaLabel="Rich Text Editor"
       />
     </div>
   );

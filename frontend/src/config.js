@@ -19,13 +19,13 @@ const config = {
   // CloudFront
   cloudfrontDomain: process.env.REACT_APP_CLOUDFRONT_DOMAIN,
   
-  // API Gateway (when implemented)
+  // API Gateway (now implemented)
   apiEndpoint: process.env.REACT_APP_API_ENDPOINT,
   
   // Feature flags
   features: {
-    // Set to false since API Gateway is not yet deployed
-    apiEnabled: false
+    // Set to true since API Gateway is now deployed
+    apiEnabled: true
   }
 };
 
@@ -47,6 +47,12 @@ if (!config.mediaBucket) {
   console.warn('REACT_APP_MEDIA_BUCKET not set. Using development fallback value.');
   // Use a clearly marked development value
   config.mediaBucket = 'DEV_ONLY-blogserverlessstack-mediabucket';
+}
+
+if (!config.apiEndpoint) {
+  console.warn('REACT_APP_API_ENDPOINT not set. Using development fallback value.');
+  // Use a clearly marked development value
+  config.apiEndpoint = 'https://yt2zvia5lf.execute-api.us-east-1.amazonaws.com/prod';
 }
 
 export default config;

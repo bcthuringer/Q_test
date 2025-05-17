@@ -2,11 +2,13 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 20px;
+  direction: ltr !important;
 }
 
 .editor-wrapper {
   display: flex;
   flex-direction: column;
+  direction: ltr !important;
 }
 
 .editor-toolbar {
@@ -22,21 +24,27 @@
   min-height: 200px;
   font-size: 16px;
   line-height: 1.6;
+  direction: ltr !important; /* Ensure text direction is left-to-right */
+  text-align: left !important;
+  unicode-bidi: plaintext;
 }
 
 .editor-content h1 {
   font-size: 24px;
   margin-bottom: 15px;
+  direction: ltr !important;
 }
 
 .editor-content h2 {
   font-size: 20px;
   margin-bottom: 12px;
+  direction: ltr !important;
 }
 
 .editor-content h3 {
   font-size: 18px;
   margin-bottom: 10px;
+  direction: ltr !important;
 }
 
 .editor-content blockquote {
@@ -45,10 +53,12 @@
   padding-left: 15px;
   color: #666;
   font-style: italic;
+  direction: ltr !important;
 }
 
 .editor-content ul, .editor-content ol {
   margin-left: 20px;
+  direction: ltr !important;
 }
 
 .editor-content a {
@@ -60,6 +70,11 @@
   max-width: 100%;
   height: auto;
   margin: 10px 0;
+}
+
+.editor-content p {
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 /* Focus styles */

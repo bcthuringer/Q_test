@@ -9,6 +9,7 @@
   padding: 30px;
   max-width: 800px;
   margin: 0 auto;
+  direction: ltr !important; /* Ensure text direction is left-to-right */
 }
 
 .journal-form h1 {
@@ -29,12 +30,15 @@
 }
 
 .form-group input[type="text"],
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  direction: ltr !important; /* Ensure text direction is left-to-right */
+  text-align: left !important;
 }
 
 .form-group input[type="file"] {

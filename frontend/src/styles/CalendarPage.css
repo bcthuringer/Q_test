@@ -1,0 +1,144 @@
+.calendar-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.calendar-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-controls button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.calendar-controls button:hover {
+  background-color: #e0e0e0;
+}
+
+.calendar {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.calendar-header div {
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+}
+
+.calendar-day {
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  position: relative;
+  min-height: 100px;
+}
+
+.calendar-day:hover:not(.empty) {
+  background-color: #f9f9f9;
+}
+
+.calendar-day.empty {
+  background-color: #f5f5f5;
+}
+
+.calendar-day.has-blogs {
+  background-color: #e3f2fd;
+  cursor: pointer;
+}
+
+.calendar-day.has-blogs:hover {
+  background-color: #bbdefb;
+}
+
+.day-number {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.blog-count {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: #0066cc;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.calendar-legend {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 4px;
+}
+
+.legend-color.has-blogs {
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+}
+
+.loading {
+  grid-column: span 7;
+  text-align: center;
+  padding: 50px;
+  color: #666;
+}
+
+.error-message {
+  color: #d32f2f;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}

@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  direction: ltr !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Global text direction fix */
+* {
+  direction: ltr;
+}
+
+input, textarea, select, button {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.rdw-editor-main {
+  direction: ltr !important;
+}
+
+.public-DraftEditor-content {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.DraftEditor-editorContainer {
+  direction: ltr !important;
+}

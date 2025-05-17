@@ -1,0 +1,117 @@
+.export-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.export-description {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+.export-form {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.export-select,
+.export-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.export-button {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.export-button:hover {
+  background-color: #0055aa;
+}
+
+.export-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d32f2f;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.export-success {
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.download-button {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  text-decoration: none;
+  padding: 12px 25px;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.download-button:hover {
+  background-color: #388e3c;
+}
+
+.export-notes {
+  background-color: #fff3e0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.export-notes h3 {
+  margin-top: 0;
+  color: #e65100;
+}
+
+.export-notes ul {
+  padding-left: 20px;
+}
+
+.export-notes li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}

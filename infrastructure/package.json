@@ -4,7 +4,8 @@
   "bin": {
     "infrastructure": "bin/blog-serverless.js",
     "cicd": "bin/cicd-app.js",
-    "github-secret": "bin/github-secret-app.js"
+    "github-secret": "bin/github-secret-app.js",
+    "api": "bin/api-app.js"
   },
   "scripts": {
     "build": "tsc",
@@ -13,7 +14,8 @@
     "cdk": "cdk",
     "deploy:main": "cdk deploy BlogServerlessStack",
     "deploy:cicd": "cdk deploy QBlogCICDStack",
-    "deploy:github-secret": "cdk deploy QBlogGitHubSecretStack"
+    "deploy:github-secret": "cdk deploy QBlogGitHubSecretStack",
+    "deploy:api": "cdk deploy QBlogApiStack"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",

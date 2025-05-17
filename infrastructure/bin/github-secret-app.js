@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
+const cdk = require("aws-cdk-lib");
+const github_secret_1 = require("../templates/github-secret");
+// Get GitHub token from environment variable if provided
+const githubTokenValue = process.env.GITHUB_TOKEN;
+const app = new cdk.App();
+new github_secret_1.GitHubSecretStack(app, 'QBlogGitHubSecretStack', {
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION || 'us-east-1'
+    },
+    description: 'GitHub OAuth token secret for Q_Blog CI/CD pipeline',
+    // Pass the GitHub token if available
+    githubTokenValue: githubTokenValue,
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ2l0aHViLXNlY3JldC1hcHAuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJnaXRodWItc2VjcmV0LWFwcC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFDQSx1Q0FBcUM7QUFDckMsbUNBQW1DO0FBQ25DLDhEQUErRDtBQUUvRCx5REFBeUQ7QUFDekQsTUFBTSxnQkFBZ0IsR0FBRyxPQUFPLENBQUMsR0FBRyxDQUFDLFlBQVksQ0FBQztBQUVsRCxNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUMxQixJQUFJLGlDQUFpQixDQUFDLEdBQUcsRUFBRSx3QkFBd0IsRUFBRTtJQUNuRCxHQUFHLEVBQUU7UUFDSCxPQUFPLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxtQkFBbUI7UUFDeEMsTUFBTSxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCLElBQUksV0FBVztLQUN0RDtJQUNELFdBQVcsRUFBRSxxREFBcUQ7SUFDbEUscUNBQXFDO0lBQ3JDLGdCQUFnQixFQUFFLGdCQUFnQjtDQUNuQyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIjIS91c3IvYmluL2VudiBub2RlXG5pbXBvcnQgJ3NvdXJjZS1tYXAtc3VwcG9ydC9yZWdpc3Rlcic7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnYXdzLWNkay1saWInO1xuaW1wb3J0IHsgR2l0SHViU2VjcmV0U3RhY2sgfSBmcm9tICcuLi90ZW1wbGF0ZXMvZ2l0aHViLXNlY3JldCc7XG5cbi8vIEdldCBHaXRIdWIgdG9rZW4gZnJvbSBlbnZpcm9ubWVudCB2YXJpYWJsZSBpZiBwcm92aWRlZFxuY29uc3QgZ2l0aHViVG9rZW5WYWx1ZSA9IHByb2Nlc3MuZW52LkdJVEhVQl9UT0tFTjtcblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcbm5ldyBHaXRIdWJTZWNyZXRTdGFjayhhcHAsICdRQmxvZ0dpdEh1YlNlY3JldFN0YWNrJywge1xuICBlbnY6IHsgXG4gICAgYWNjb3VudDogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfQUNDT1VOVCwgXG4gICAgcmVnaW9uOiBwcm9jZXNzLmVudi5DREtfREVGQVVMVF9SRUdJT04gfHwgJ3VzLWVhc3QtMScgXG4gIH0sXG4gIGRlc2NyaXB0aW9uOiAnR2l0SHViIE9BdXRoIHRva2VuIHNlY3JldCBmb3IgUV9CbG9nIENJL0NEIHBpcGVsaW5lJyxcbiAgLy8gUGFzcyB0aGUgR2l0SHViIHRva2VuIGlmIGF2YWlsYWJsZVxuICBnaXRodWJUb2tlblZhbHVlOiBnaXRodWJUb2tlblZhbHVlLFxufSk7XG4iXX0=

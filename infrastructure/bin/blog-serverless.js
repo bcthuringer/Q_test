@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
+const cdk = require("aws-cdk-lib");
+const fixed_stack_1 = require("../templates/fixed-stack");
+const app = new cdk.App();
+new fixed_stack_1.FixedBlogStack(app, 'BlogServerlessStack', {
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION || 'us-east-1'
+    },
+    description: 'Serverless blog platform with user authentication and admin approval',
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYmxvZy1zZXJ2ZXJsZXNzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiYmxvZy1zZXJ2ZXJsZXNzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUNBLHVDQUFxQztBQUNyQyxtQ0FBbUM7QUFDbkMsMERBQTBEO0FBRTFELE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsRUFBRSxDQUFDO0FBQzFCLElBQUksNEJBQWMsQ0FBQyxHQUFHLEVBQUUscUJBQXFCLEVBQUU7SUFDN0MsR0FBRyxFQUFFO1FBQ0gsT0FBTyxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsbUJBQW1CO1FBQ3hDLE1BQU0sRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQixJQUFJLFdBQVc7S0FDdEQ7SUFDRCxXQUFXLEVBQUUsc0VBQXNFO0NBQ3BGLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIiMhL3Vzci9iaW4vZW52IG5vZGVcbmltcG9ydCAnc291cmNlLW1hcC1zdXBwb3J0L3JlZ2lzdGVyJztcbmltcG9ydCAqIGFzIGNkayBmcm9tICdhd3MtY2RrLWxpYic7XG5pbXBvcnQgeyBGaXhlZEJsb2dTdGFjayB9IGZyb20gJy4uL3RlbXBsYXRlcy9maXhlZC1zdGFjayc7XG5cbmNvbnN0IGFwcCA9IG5ldyBjZGsuQXBwKCk7XG5uZXcgRml4ZWRCbG9nU3RhY2soYXBwLCAnQmxvZ1NlcnZlcmxlc3NTdGFjaycsIHtcbiAgZW52OiB7IFxuICAgIGFjY291bnQ6IHByb2Nlc3MuZW52LkNES19ERUZBVUxUX0FDQ09VTlQsIFxuICAgIHJlZ2lvbjogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfUkVHSU9OIHx8ICd1cy1lYXN0LTEnIFxuICB9LFxuICBkZXNjcmlwdGlvbjogJ1NlcnZlcmxlc3MgYmxvZyBwbGF0Zm9ybSB3aXRoIHVzZXIgYXV0aGVudGljYXRpb24gYW5kIGFkbWluIGFwcHJvdmFsJyxcbn0pO1xuIl19

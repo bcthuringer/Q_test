@@ -12,7 +12,7 @@ Amplify.configure({
     region: config.region,
     userPoolId: config.userPoolId,
     userPoolWebClientId: config.userPoolClientId,
-    mandatorySignIn: true,
+    mandatorySignIn: false, // Changed to false to allow unauthenticated API calls
   },
   Storage: {
     AWSS3: {
@@ -27,7 +27,14 @@ Amplify.configure({
         {
           name: 'blogApi',
           endpoint: config.apiEndpoint,
-          region: config.region
+          region: config.region,
+          custom_header: async () => {
+            return { 
+              // Add any required headers here
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            };
+          }
         }
       ]
     }

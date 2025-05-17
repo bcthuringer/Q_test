@@ -304,7 +304,7 @@ This project is designed as a learning resource. If you have suggestions for imp
 
 ## Authors
 
-### Bradley
+### Bradley C. Thuringer
 Software Engineer and AWS Cloud Architect who contributed to the development of this instructional guide. Bradley provided expertise in serverless architecture design, AWS infrastructure, and best practices for cloud-native applications.
 
 ### Amazon Q
